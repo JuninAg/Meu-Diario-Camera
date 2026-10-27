@@ -32,11 +32,18 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env
+.env.*
 
 # typescript
 *.tsbuildinfo
 
 example
+
+# local editor and OS files
+.vscode/*.log
+Thumbs.db
+*.log
 
 # generated native folders
 /ios

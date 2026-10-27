@@ -1,56 +1,113 @@
-# Welcome to your Expo app 👋
+# Meu Diário de Lugares
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo Android para registrar lugares visitados com nome, descrição, fotografia e coordenadas capturadas pelo GPS. Os registros e as fotos ficam no armazenamento local do aparelho; não há servidor nem conta necessária.
 
-## Get started
+## Objetivo e funcionalidades
 
-1. Install dependencies
+- Registrar, listar, consultar, editar e excluir lugares.
+- Tirar uma foto com a câmera ou escolher uma imagem existente.
+- Capturar latitude e longitude após uma ação explícita do usuário.
+- Abrir as coordenadas no Google Maps ou em outro app de mapas disponível.
+- Manter os registros entre fechamentos e reaberturas do app.
+- Validar os campos e informar erros de permissão, localização, imagem e armazenamento.
 
-   ```bash
-   npm install
-   ```
+## Tecnologias
 
-2. Start the app
+React Native, Expo SDK 58, TypeScript, Expo Router, Expo ImagePicker, Expo Location, Expo FileSystem e AsyncStorage.
 
-   ```bash
-   npx expo start
-   ```
+## Pré-requisitos
 
-In the output, you'll find options to open the app in a
+- Node.js LTS e npm.
+- VS Code (recomendado).
+- Android com Expo Go compatível com SDK 58, ou emulador Android configurado no Android Studio.
+- Para GPS mais preciso, aparelho com localização ativada e sinal disponível.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Instalação e execução
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+No terminal do VS Code, abra a pasta `MeuAppCameraGPS` e rode:
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Para testar em um celular, instale o Expo Go compatível com o SDK do projeto, conecte computador e celular à mesma rede Wi-Fi, escaneie o QR code exibido no terminal e aceite abrir o projeto. Para emulador, inicie o Android Emulator antes e pressione `a` no terminal do Expo. Também é possível executar `npm run android` com o emulador aberto.
 
-### Other setup steps
+Se sua versão instalada do Expo Go não aceitar o SDK 58, use um development build Android (`npx expo run:android`) em vez de tentar abrir o projeto com uma versão incompatível do Expo Go.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Permissões de câmera e GPS
 
-## Learn more
+As permissões são pedidas quando o usuário toca em **Tirar foto** ou **Capturar localização GPS**. Para selecionar uma foto, o Android pode usar o seletor de fotos do sistema. Se uma permissão for negada, o app informa o motivo; reative-a em **Configurações do Android → Apps → Meu Diário de Lugares → Permissões**. Ative também **Localização** nas configurações rápidas do aparelho. Nenhuma coordenada de exemplo é usada.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Armazenamento local
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+AsyncStorage guarda uma lista JSON de metadados: identificador, nome, descrição, URI da fotografia e coordenadas, além das datas de criação e atualização. O conteúdo da fotografia é copiado para o diretório persistente privado do app com Expo FileSystem; no AsyncStorage fica somente o caminho da imagem. Ao excluir um registro, a foto correspondente também é removida. Desinstalar o aplicativo ou limpar seus dados apaga os registros locais.
 
-## Join the community
+## Estrutura principal
 
-Join our community of developers creating universal apps.
+```text
+src/
+  app/                 Rotas e telas do Expo Router
+    detalhes/[id].tsx  Detalhes do lugar
+    index.tsx          Tela inicial
+    lugares.tsx        Lista e ações dos registros
+    novo-lugar.tsx     Criação e edição
+  ui.tsx               Elementos reutilizáveis da interface
+  services/
+    camera.ts          Câmera e seletor de imagens
+    location.ts        Permissão e leitura GPS
+    storage.ts         AsyncStorage e arquivos persistentes
+  Lugar.ts             Tipo do registro
+app.json               Identidade e configuração de permissões
+package.json           Dependências e comandos
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Comandos
+
+```bash
+npm install             # instala dependências
+npx expo start          # inicia o servidor de desenvolvimento
+npm run android         # inicia e abre no Android conectado/emulado
+npx tsc --noEmit        # verifica os tipos TypeScript
+npx expo-doctor         # verifica configuração e dependências Expo
+```
+
+## Problemas comuns
+
+- **QR code não conecta:** deixe o telefone e o computador na mesma rede; tente `npx expo start --tunnel` se a rede bloquear conexões locais.
+- **Expo Go incompatível:** instale a versão do Expo Go compatível com SDK 58 ou crie um development build Android.
+- **Câmera negada/indisponível:** confira as permissões do aplicativo e feche outros apps que estejam usando a câmera.
+- **GPS sem posição:** ative a localização, teste ao ar livre e aguarde o sinal. O app não salva coordenadas se a leitura falhar.
+- **Falha ao gravar:** confira o espaço livre e tente novamente; os arquivos ficam no armazenamento privado do app.
+- **Dependências divergentes:** rode `npx expo install --fix` e depois `npm install`.
+
+## Testes manuais no Android
+
+1. Abrir o app e conferir a tela inicial e a contagem de registros.
+2. Registrar um lugar sem nome, descrição, foto ou GPS; confirmar que o app explica os campos ausentes.
+3. Negar a permissão de câmera e conferir a mensagem; permitir e tirar uma foto; tirar outra para substituir a prévia.
+4. Capturar GPS com localização ligada e conferir latitude e longitude reais; repetir com a localização desligada e verificar o aviso.
+5. Salvar e conferir o cartão, detalhes, data e coordenadas; abrir as coordenadas no mapa.
+6. Editar o nome/descrição e a foto; fechar e abrir o app e confirmar a persistência.
+7. Excluir um lugar, cancelar uma exclusão e confirmar outra; conferir a mensagem de lista vazia quando aplicável.
+
+## GitHub
+
+Crie um repositório vazio no GitHub e, no terminal desta pasta, substitua `URL_DO_REPOSITORIO` pelo endereço real exibido pelo GitHub:
+
+```bash
+git init
+git add .
+git commit -m "Projeto inicial: Meu Diário de Lugares"
+git branch -M main
+git remote add origin URL_DO_REPOSITORIO
+git push -u origin main
+```
+
+O `.gitignore` exclui dependências instaladas, caches, builds e arquivos locais. Não publique tokens, credenciais ou dados pessoais.
+
+## Integrantes
+
+- Nome: ______________________________________________
+- Nome: ______________________________________________
+- Nome: ______________________________________________

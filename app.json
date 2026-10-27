@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "MeuAppCameraGPS",
-    "slug": "MeuAppCameraGPS",
+    "name": "Meu Diário de Lugares",
+    "slug": "meu-diario-de-lugares",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -11,6 +11,7 @@
       "icon": "./assets/expo.icon"
     },
     "android": {
+      "package": "com.meudiariodelugares.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -25,6 +26,8 @@
     },
     "plugins": [
       "expo-router",
+      ["expo-image-picker", { "cameraPermission": "Permitir que o Meu Diário de Lugares tire fotos dos seus registros.", "photosPermission": "Permitir que o Meu Diário de Lugares selecione fotos para os seus registros.", "microphonePermission": false }],
+      ["expo-location", { "locationWhenInUsePermission": "Permitir que o Meu Diário de Lugares registre a localização dos lugares visitados." }],
       [
         "expo-splash-screen",
         {
